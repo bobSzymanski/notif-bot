@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "babel app --out-dir lib --copy-files",
+    "lint": "./node_modules/.bin/eslint --ext .js --env node app",
+    "lint:fix": "./node_modules/.bin/eslint --fix --ext .js --env node app",
     "start": "node ./bin/www",
     "test": "echo \"Please write some unit tests!\""
   },
@@ -38,5 +40,13 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.11.1"
   }
 }

@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import discord from './services/discord';
 import { health, webhooks } from './routes';
-import { errorHandler } from './middlewares';
+import { errorHandler, logger } from './middlewares';
 import { mongoConnect } from './utils/mongo';
 
 const app = express();
@@ -16,11 +16,12 @@ app.use('/', health);
 app.use('/health', health);
 app.use('/v1/webhooks', webhooks);
 
+
+app.use(logger);
 app.use(errorHandler.notFoundError);
 app.use(errorHandler.error);
 
-
-// Mongo && discord connections are async, 
+// Mongo && discord connections are async,
 // Use health check to verify connected before use.
 discord();
 mongoConnect();

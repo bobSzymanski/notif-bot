@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
 
-export default function health(app) {
-	return Promise.resolve(true);
+export default function health() {
+  return Promise.resolve(true);
 }
