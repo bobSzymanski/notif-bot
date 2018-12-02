@@ -1,0 +1,42 @@
+{
+  "name": "notif-bot",
+  "version": "1.0.0",
+  "description": "A discord bot for user notifications.",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel app --out-dir lib --copy-files",
+    "start": "node ./bin/www",
+    "test": "echo \"Please write some unit tests!\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobSzymanski/notif-bot.git"
+  },
+  "author": "Bob.Szymanski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bobSzymanski/notif-bot/issues"
+  },
+  "homepage": "https://github.com/bobSzymanski/notif-bot#readme",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "bluebird": "^3.5.3",
+    "body-parser": "^1.18.3",
+    "boom": "^7.3.0",
+    "config": "^3.0.0",
+    "cors": "^2.8.5",
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "jest": "^23.6.0",
+    "mongodb": "^3.1.10",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "uuid": "^3.3.2"
+  }
+}

@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+require('dotenv').config({ silent: true });
+
+const http = require('http');
+const loader = require('./../lib/server').default;
+
+function normalizePort(val) {
+	const port = parseInt(val, 10);
+
+	if (isNaN(port)) {
+		return val;
+	}
+
+	if (port >= 0) {
+		return port;
+	}
+
+	return false;
+}
+
+const debug = require('debug')('notification_bot');
+const port = normalizePort(process.env.PORT || '8080');
+const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
+
+function onError(err) {
+	switch (err.code) {
+	case 'EACCES':
+		console.error(`x ${bind} requires elevated privileges`);
+		process.exit(1);
+		break;
+	case 'EADDRINUSE':
+		console.error(`x ${bind} is already in use`);
+		process.exit(1);
+		break;
+	default:
+		throw err;
+	}
+}
+
+function gracefulShutdown(server) {
+	return () => {
+		debug(`Received kill signal, shutting down gracefully at ${new Date().toISOString()}`);
+
+		server.close(() => {
+			debug(`Closed all remaining connections at ${new Date().toISOString()}`);
+		});
+	};
+}
+
+process.on('uncaughtException', (err) => {
+	console.log('FATAL: uncaughtException!!');
+	console.log(err.message);
+	process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+	console.log('FATAL: unhandledRejection!!');
+	console.log(err.message);
+	process.exit(1);
+});
+
+loader.tap((app) => {
+	if (app.get('exitFn')) {
+		process.on('SIGTERM', app.get('exitFn'));
+	}
+}).then((app) => {
+	const server = http.createServer(app);
+	const shutdown = gracefulShutdown(server);
+	return { server, app, shutdown };
+}).then(({ server, app, shutdown }) => {
+	server.listen(port)
+		.on('error', onError)
+		.on('listening', () => {
+			const addr = server.address();
+			app.set('port', addr.port);
+
+			debug(`listening on ${addr.address}:${addr.port} on ${process.pid}`);
+			process.on('SIGTERM', shutdown);
+		});
+	return server;
+}).catch(onError);

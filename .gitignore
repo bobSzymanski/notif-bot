@@ -1,0 +1,14 @@
+cert
+*.pem
+*.cert
+*.crt
+logs
+*.log
+.npm
+node_modules
+build
+.env
+*.DS_Store
+*.DS_STORE
+tmp
+lib
