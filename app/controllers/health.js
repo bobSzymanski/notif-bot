@@ -1,6 +1,5 @@
 import health from '../services/health';
 import pkg from '../../package.json';
-import { mongoHealth } from '../utils/mongo';
 import { discordPing } from '../services/discord';
 import log from '../utils/logger';
 
@@ -13,8 +12,6 @@ const payload = {
 export function get(req, res, _next) {
   return health(req.app)
     .then(() => {
-      return mongoHealth();
-    }).then(() => {
       return discordPing();
     }).then((ping) => { // We could mark unhealthy if this is high
       const body = {

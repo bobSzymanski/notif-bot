@@ -1,27 +1,26 @@
 import Discord from 'discord.js';
+import constants from '../resources/constants';
 import log from '../utils/logger';
+import users from '../utils/users';
 
 const client = new Discord.Client();
 
 const secretToken = process.env.DISCORD_SECRET_TOKEN;
-const DISCONNECT = 'DISCONNECT';
-const CONNECT = 'CONNECT';
 
 function notifyChannel(channelId, guildMember, state) {
   const guildChannel = guildMember.guild.channels.get(channelId);
   const members = guildChannel.members.filter((member) => {
-    return member.id !== guildMember.id;
+    return member.id !== guildMember.id && users.isUserEnabled(member.id); // Get all OTHER opted in users
   });
 
   const nick = guildMember.nickname || guildMember.user.username;
 
   members.forEach((key) => {
-    //  TODO: Look up KEY in mongoDB and make sure that user is opted IN before sending any messages.
-    if (state === CONNECT) {
+    if (state === constants.CONNECT) {
       key.send(`${nick} joined.`);
     }
 
-    if (state === DISCONNECT) {
+    if (state === constants.DISCONNECT) {
       key.send(`${nick} left.`);
     }
   });
@@ -36,19 +35,24 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   const newChannelId = newMember.voiceChannelID;
 
   if (oldChannelId) {
-    notifyChannel(oldChannelId, oldMember, DISCONNECT);
+    notifyChannel(oldChannelId, oldMember, constants.DISCONNECT);
   }
 
   if (newChannelId) {
-    notifyChannel(newChannelId, newMember, CONNECT);
+    notifyChannel(newChannelId, newMember, constants.CONNECT);
   }
 });
 
 client.on('message', (message) => {
-  if (message.content.startsWith('!subscribe')) {
-    // TODO: Handle client opting IN and OUT of notifications.
-    // Default behavior should be to not send anything until user opts in.
-    message.channel.send('i herd u wanted notifications! coming soon...');
+  if (message.content.startsWith(constants.SUB_TOGGLE_COMMAND)) {
+    const guildMember = message.member;
+    const nick = guildMember.nickname || guildMember.user.username;
+    const newState = users.toggleState(guildMember.id);
+    if (newState === constants.USER_ADDED_STATE) {
+      message.channel.send(`${nick} subscribed to notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`); // eslint-disable-line
+    } else {
+      message.channel.send(`${nick} unsubscribed from notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`); // eslint-disable-line
+    }
   }
 });
 

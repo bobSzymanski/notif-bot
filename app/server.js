@@ -5,7 +5,7 @@ import cors from 'cors';
 import discord from './services/discord';
 import { health, webhooks } from './routes';
 import { errorHandler, logger } from './middlewares';
-import { mongoConnect } from './utils/mongo';
+import users from './utils/users';
 
 const app = express();
 
@@ -24,6 +24,7 @@ app.use(errorHandler.error);
 // Mongo && discord connections are async,
 // Use health check to verify connected before use.
 discord();
-mongoConnect();
+
+users.init();
 
 export default Promise.resolve(app);
