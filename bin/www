@@ -49,12 +49,30 @@ function gracefulShutdown(server) {
 
 process.on('uncaughtException', (err) => {
 	console.log('FATAL: uncaughtException!!');
+	try {
+		console.log(JSON.stringify(err));
+	} catch(parseError) { 
+		console.log('WARN: Failed to stringify error!');
+	}
+
+	console.log('err was:');
+	console.log(err);
+	console.log('err.message was:');
 	console.log(err.message);
 	process.exit(1);
 });
 
 process.on('unhandledRejection', (err) => {
 	console.log('FATAL: unhandledRejection!!');
+	try {
+		console.log(JSON.stringify(err));
+	} catch(parseError) { 
+		console.log('WARN: Failed to stringify error!');
+	}
+
+	console.log('err was:');
+	console.log(err);
+	console.log('err.message was:');
 	console.log(err.message);
 	process.exit(1);
 });

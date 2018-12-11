@@ -8,6 +8,7 @@
     "lint": "./node_modules/.bin/eslint --ext .js --env node app",
     "lint:fix": "./node_modules/.bin/eslint --fix --ext .js --env node app",
     "start": "node ./bin/www",
+    "start:forever": "./node_modules/.bin/forever --minUptime 999 ---spinSleepTime 1000 ./bin/www",
     "test": "echo \"Please write some unit tests!\""
   },
   "repository": {
@@ -35,6 +36,7 @@
     "discord.js": "^11.4.2",
     "dotenv": "^6.1.0",
     "express": "^4.16.4",
+    "forever": "^0.15.3",
     "jest": "^23.6.0",
     "mongodb": "^3.1.10",
     "request": "^2.88.0",
