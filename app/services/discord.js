@@ -34,6 +34,9 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   const oldChannelId = oldMember.voiceChannelID;
   const newChannelId = newMember.voiceChannelID;
 
+  // Some user actions within the same channel trigger this event
+  if (oldChannelId === newChannelId) { return; }
+
   if (oldChannelId) {
     notifyChannel(oldChannelId, oldMember, constants.DISCONNECT);
   }
