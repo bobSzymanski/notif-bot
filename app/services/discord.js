@@ -60,17 +60,8 @@ client.on('message', (message) => {
 });
 
 client.on('error', (err) => {
-  log('Discord client recorded an error!');
-  try {
-    log('Logging stringified error:');
-    log(JSON.stringify(err));
-  } catch (parseError) {
-    log('WARN: Failed to stringify error!');
-  }
-
-  log('Logging error as-is:');
+  log('Discord client recorded an error event!');
   log(err);
-  // TODO: Are there any actions we need to take here? Just let discord.js handle reconnect?
 });
 
 export default function init() {
