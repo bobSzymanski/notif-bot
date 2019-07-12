@@ -38,11 +38,26 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   if (oldChannelId === newChannelId) { return; }
 
   if (oldChannelId) {
-    notifyChannel(oldChannelId, oldMember, constants.DISCONNECT);
+    try {
+      notifyChannel(oldChannelId, oldMember, constants.DISCONNECT);
+    } catch(err) {
+      /* 
+      * Sending messages to users occasionally throws this error: 
+      * DiscordAPIError: Cannot send messages to this user
+      * This might mean user is blocking DMs. Catch and log. 
+      */ 
+      log('Caught error trying to call notifyChannel!');
+      log(err);
+    }
   }
 
   if (newChannelId) {
-    notifyChannel(newChannelId, newMember, constants.CONNECT);
+    try {
+      notifyChannel(newChannelId, newMember, constants.CONNECT);
+    } catch(err) {
+      log('Caught error trying to call notifyChannel!');
+      log(err);
+    }
   }
 });
 
@@ -63,6 +78,12 @@ client.on('error', (err) => {
   log('Discord client recorded an error event!');
   log(err);
 });
+
+client.on('error', (err) => {
+  log('Discord client recorded an error event!');
+  log(err);
+});
+
 
 export default function init() {
   return client.login(secretToken);
