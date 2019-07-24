@@ -18,6 +18,7 @@ function notifyChannel(channelId, guildMember, state) {
   members.forEach((key) => {
     if (state === constants.CONNECT) {
       try {
+        console.log(`Trying to send message to user (join-event) with key: ${key}`);
         key.send(`${nick} joined.`);
       } catch (ex) {
         log(`Caught error sending message to key ${key} when ${nick} joined! It was:`);
@@ -27,6 +28,7 @@ function notifyChannel(channelId, guildMember, state) {
 
     if (state === constants.DISCONNECT) {
       try {
+        console.log(`Trying to send message to user (leave-event) with key: ${key}`);
         key.send(`${nick} left.`);
       } catch (ex) {
         log(`Caught error sending message to key ${key} when ${nick} left! It was:`);
@@ -83,12 +85,6 @@ client.on('error', (err) => {
   log('Discord client recorded an error event!');
   log(err);
 });
-
-client.on('error', (err) => {
-  log('Discord client recorded an error event!');
-  log(err);
-});
-
 
 export default function init() {
   return client.login(secretToken);
