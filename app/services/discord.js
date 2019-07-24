@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import Promise from 'bluebird';
 import constants from '../resources/constants';
 import log from '../utils/logger';
 import users from '../utils/users';
@@ -15,27 +16,22 @@ function notifyChannel(channelId, guildMember, state) {
 
   const nick = guildMember.nickname || guildMember.user.username;
 
-  members.forEach((key) => {
+  const messagePromises = members.map((key) => {
     if (state === constants.CONNECT) {
-      try {
-        console.log(`Trying to send message to user (join-event) with key: ${key}`);
-        key.send(`${nick} joined.`);
-      } catch (ex) {
-        log(`Caught error sending message to key ${key} when ${nick} joined! It was:`);
-        log(ex);
-      }
+      return key.send(`${nick} joined.`);
+    }
+    if (state === constants.DISCONNECT) {
+      return key.send(`${nick} left.`);
     }
 
-    if (state === constants.DISCONNECT) {
-      try {
-        console.log(`Trying to send message to user (leave-event) with key: ${key}`);
-        key.send(`${nick} left.`);
-      } catch (ex) {
-        log(`Caught error sending message to key ${key} when ${nick} left! It was:`);
-        log(ex);
-      }
-    }
+    return Promise.resolve(); // If no action to take, or some unidentified state, just ignore.
   });
+
+  return Promise.all(messagePromises)
+    .catch((exs) => {
+      log('Caught exception when messaging user(s)!');
+      log(exs);
+    });
 }
 
 client.on('ready', () => {
@@ -49,13 +45,21 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   // Some user actions within the same channel trigger this event
   if (oldChannelId === newChannelId) { return; }
 
+  const notifications = [];
+
   if (oldChannelId) {
-    notifyChannel(oldChannelId, oldMember, constants.DISCONNECT);
+    notifications.add(notifyChannel(oldChannelId, oldMember, constants.DISCONNECT));
   }
 
   if (newChannelId) {
-    notifyChannel(newChannelId, newMember, constants.CONNECT);
+    notifications.add(notifyChannel(newChannelId, newMember, constants.CONNECT));
   }
+
+  Promise.all(notifications)
+    .catch((exs) => {
+      log('Caught exception when calling notifyChannel promises!');
+      log(exs);
+    });
 });
 
 client.on('message', (message) => {
@@ -64,19 +68,17 @@ client.on('message', (message) => {
     const nick = guildMember.nickname || guildMember.user.username;
     const newState = users.toggleState(guildMember.id);
     if (newState === constants.USER_ADDED_STATE) {
-      try {
-        message.channel.send(`${nick} subscribed to notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`); // eslint-disable-line
-      } catch (ex) {
-        log('Caught error sending message to channel on USER_ADDED_STATE! It was:');
-        log(ex);
-      }
+      message.channel.send(`${nick} subscribed to notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`) // eslint-disable-line
+        .catch((ex) => {
+          log('Caught error sending message to channel on USER_ADDED_STATE! It was:');
+          log(ex);
+        });
     } else {
-      try {
-        message.channel.send(`${nick} unsubscribed from notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`); // eslint-disable-line
-      } catch (ex) {
-        log('Caught error sending message to channel on unsub! It was:');
-        log(ex);
-      }
+      message.channel.send(`${nick} unsubscribed from notifications. Type ${constants.SUB_TOGGLE_COMMAND} to toggle subscription.`) // eslint-disable-line
+        .catch((ex) => {
+          log('Caught error sending message to channel on unsub! It was:');
+          log(ex);
+        });
     }
   }
 });
