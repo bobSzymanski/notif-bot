@@ -48,11 +48,11 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
   const notifications = [];
 
   if (oldChannelId) {
-    notifications.add(notifyChannel(oldChannelId, oldMember, constants.DISCONNECT));
+    notifications.push(notifyChannel(oldChannelId, oldMember, constants.DISCONNECT));
   }
 
   if (newChannelId) {
-    notifications.add(notifyChannel(newChannelId, newMember, constants.CONNECT));
+    notifications.push(notifyChannel(newChannelId, newMember, constants.CONNECT));
   }
 
   Promise.all(notifications)
