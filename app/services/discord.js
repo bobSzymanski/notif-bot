@@ -7,6 +7,7 @@ import users from '../utils/users';
 const client = new Discord.Client();
 
 const secretToken = process.env.DISCORD_SECRET_TOKEN;
+const defaultOptions = { tts: true };
 
 function notifyChannel(channelId, guildMember, state) {
   const guildChannel = guildMember.guild.channels.get(channelId);
@@ -18,10 +19,10 @@ function notifyChannel(channelId, guildMember, state) {
 
   const messagePromises = members.map((key) => {
     if (state === constants.CONNECT) {
-      return key.send(`${nick} joined.`);
+      return key.send(`${nick} joined.`, defaultOptions);
     }
     if (state === constants.DISCONNECT) {
-      return key.send(`${nick} left.`);
+      return key.send(`${nick} left.`, defaultOptions);
     }
 
     return Promise.resolve(); // If no action to take, or some unidentified state, just ignore.
