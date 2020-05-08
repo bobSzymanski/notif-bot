@@ -8,7 +8,7 @@
     "lint": "./node_modules/.bin/eslint --ext .js --env node app",
     "lint:fix": "./node_modules/.bin/eslint --fix --ext .js --env node app",
     "start": "node ./bin/www",
-    "start:forever": "./node_modules/.bin/forever --minUptime 999 ---spinSleepTime 1000 ./bin/www",
+    "start:forever": "./node_modules/.bin/forever --minUptime 999 --spinSleepTime 1000 ./bin/www",
     "test": "echo \"Please write some unit tests!\""
   },
   "repository": {
