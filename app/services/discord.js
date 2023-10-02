@@ -1,5 +1,4 @@
 import Discord from 'discord.js';
-import Promise from 'bluebird';
 import constants from '../resources/constants';
 import log from '../utils/logger';
 import users from '../utils/users';

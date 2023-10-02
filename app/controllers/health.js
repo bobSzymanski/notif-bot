@@ -1,7 +1,9 @@
 import health from '../services/health';
-import pkg from '../../package.json';
+import loadJsonFile from '../utils/loadJsonFile';
 import { discordPing } from '../services/discord';
 import log from '../utils/logger';
+
+const pkg = loadJsonFile('package.json');
 
 const payload = {
   name: 'Discord notifications bot',
