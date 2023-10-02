@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-require('dotenv').config({ silent: true });
-
-const http = require('http');
-const loader = require('./../lib/server').default;
+import 'dotenv/config';
+import Debug from 'debug';
+import http from 'http';
+import { default as loader } from './../app/server.js';
 
 function normalizePort(val) {
   const port = parseInt(val, 10);
@@ -18,7 +18,7 @@ function normalizePort(val) {
   return false;
 }
 
-const debug = require('debug')('notification_bot');
+const debug = Debug('notification_bot');
 const port = normalizePort(process.env.PORT || '8080');
 const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
 
@@ -65,10 +65,11 @@ process.on('unhandledRejection', (err) => {
   process.exit(1);
 });
 
-loader.tap((app) => {
+loader.then((app) => {
   if (app.get('exitFn')) {
     process.on('SIGTERM', app.get('exitFn'));
   }
+  return Promise.resolve(app);
 }).then((app) => {
   const server = http.createServer(app);
   const shutdown = gracefulShutdown(server);
